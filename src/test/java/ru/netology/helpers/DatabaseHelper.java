@@ -11,8 +11,7 @@ public class DatabaseHelper {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/app", "app", "pass");
+        return DriverManager.getConnection(url, user, password);
     }
 
     public static String getUserId() {
