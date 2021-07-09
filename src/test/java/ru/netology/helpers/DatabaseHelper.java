@@ -1,8 +1,5 @@
 package ru.netology.helpers;
 
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
-
 import java.sql.*;
 
 public class DatabaseHelper {
@@ -11,6 +8,11 @@ public class DatabaseHelper {
     private final static String password = "pass";
 
     private DatabaseHelper() {
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
+                "jdbc:mysql://127.0.0.1:3306/app", "app", "pass");
     }
 
     public static String getUserId() {
@@ -49,15 +51,18 @@ public class DatabaseHelper {
         return null;
     }
 
-    public static void clearAuthCodesTable() {
-        String deleteAuthCodeSQL = " DELETE FROM auth_codes;";
-        QueryRunner runner = new QueryRunner();
-        try {
-            try (Connection conn = DriverManager.getConnection(url, user, password)) {
-                runner.execute(conn, deleteAuthCodeSQL, new ScalarHandler<>());
-            }
-        } catch (SQLException throwable) {
-            throwable.printStackTrace();
+    public static void clearTables() throws SQLException {
+        String deleteCards = "DELETE FROM cards; ";
+        String deleteAuthCodes = "DELETE FROM auth_codes; ";
+        String deleteUsers = "DELETE FROM users; ";
+        try (var conn = getConnection();
+             var deleteCardsStmt = conn.createStatement();
+             var deleteAuthCodesStmt = conn.createStatement();
+             var deleteUsersStmt = conn.createStatement()
+        ) {
+            deleteCardsStmt.executeUpdate(deleteCards);
+            deleteAuthCodesStmt.executeUpdate(deleteAuthCodes);
+            deleteUsersStmt.executeUpdate(deleteUsers);
         }
     }
 }

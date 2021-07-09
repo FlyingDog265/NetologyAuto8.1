@@ -7,14 +7,14 @@ import ru.netology.helpers.DatabaseHelper;
 import ru.netology.pages.DashboardPage;
 import ru.netology.pages.LoginPage;
 
+import java.sql.SQLException;
+
 import static com.codeborne.selenide.Selenide.open;
 import static ru.netology.helpers.AuthInfoHelper.*;
 import static ru.netology.helpers.DatabaseHelper.getVerificationCode;
 import static ru.netology.helpers.VerificationCodeHelper.getInvalidVerificationCode;
 
 public class AuthTest {
-    LoginPage loginPage = new LoginPage();
-    DashboardPage dashboardPage = new DashboardPage();
 
     @BeforeEach
     public void openPage() {
@@ -22,12 +22,14 @@ public class AuthTest {
     }
 
     @AfterAll
-    public static void cleanTables() {
-        DatabaseHelper.clearAuthCodesTable();
+    public static void cleanTables() throws SQLException {
+        DatabaseHelper.clearTables();
     }
 
     @Test
     void shouldValidData() {
+        LoginPage loginPage = new LoginPage();
+        DashboardPage dashboardPage = new DashboardPage();
         var authInfo = getValidAuthInfo();
         var verificationPage = loginPage.validAuth(authInfo);
         var codeVerify = getVerificationCode();
@@ -37,18 +39,21 @@ public class AuthTest {
 
     @Test
     void shouldNotValidLogin() {
+        LoginPage loginPage = new LoginPage();
         var authInfo = getInvalidLogin();
         loginPage.invalidAuth(authInfo);
     }
 
     @Test
     void shouldNotValidPassword() {
+        LoginPage loginPage = new LoginPage();
         var authInfo = getInvalidPassword();
         loginPage.invalidAuth(authInfo);
     }
 
     @Test
     void shouldNotValidAuthCode() {
+        LoginPage loginPage = new LoginPage();
         var authInfo = getValidAuthInfo();
         var verificationPage = loginPage.validAuth(authInfo);
         verificationPage.invalidVerify(getInvalidVerificationCode());
@@ -56,6 +61,7 @@ public class AuthTest {
 
     @Test
     void shouldBlockWhenThreeInvalidPasswords() {
+        LoginPage loginPage = new LoginPage();
         var authInfo = getInvalidPassword();
         loginPage.invalidAuth(authInfo);
         var invalidPassword = invalidPassword();
