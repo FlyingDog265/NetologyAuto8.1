@@ -18,8 +18,7 @@ public class DatabaseHelper {
     public static String getUserId() {
         String getUserId = "SELECT id FROM users WHERE login = 'vasya';";
         try (
-                Connection connect = DriverManager.getConnection(url, user, password);
-                Statement createStmt = connect.createStatement()
+                Statement createStmt = getConnection().createStatement()
         ) {
             try (ResultSet resultSet = createStmt.executeQuery(getUserId)) {
                 if (resultSet.next()) {
@@ -35,9 +34,7 @@ public class DatabaseHelper {
     public static String getVerificationCode() {
         String requestCode = "SELECT code FROM auth_codes WHERE user_id = ? ORDER BY created DESC LIMIT 1;";
         try (
-                Connection connect = DriverManager.getConnection(url, user, password
-                );
-                PreparedStatement prepareStmt = connect.prepareStatement(requestCode)
+                PreparedStatement prepareStmt = getConnection().prepareStatement(requestCode)
         ) {
             prepareStmt.setString(1, getUserId());
             try (ResultSet resultSet = prepareStmt.executeQuery()) {
@@ -55,10 +52,10 @@ public class DatabaseHelper {
         String deleteCards = "DELETE FROM cards; ";
         String deleteAuthCodes = "DELETE FROM auth_codes; ";
         String deleteUsers = "DELETE FROM users; ";
-        try (var conn = getConnection();
-             var deleteCardsStmt = conn.createStatement();
-             var deleteAuthCodesStmt = conn.createStatement();
-             var deleteUsersStmt = conn.createStatement()
+        try (var connect = getConnection();
+             var deleteCardsStmt = connect.createStatement();
+             var deleteAuthCodesStmt = connect.createStatement();
+             var deleteUsersStmt = connect.createStatement()
         ) {
             deleteCardsStmt.executeUpdate(deleteCards);
             deleteAuthCodesStmt.executeUpdate(deleteAuthCodes);
