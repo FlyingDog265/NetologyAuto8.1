@@ -1,6 +1,8 @@
 package ru.netology.helpers;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DatabaseHelper {
     private final static String url = "jdbc:mysql://localhost:3306/app";
@@ -17,9 +19,9 @@ public class DatabaseHelper {
     public static String getUserId() {
         String getUserId = "SELECT id FROM users WHERE login = 'vasya';";
         try (
-                Statement createStmt = getConnection().createStatement()
+                var createStmt = getConnection().createStatement()
         ) {
-            try (ResultSet resultSet = createStmt.executeQuery(getUserId)) {
+            try (var resultSet = createStmt.executeQuery(getUserId)) {
                 if (resultSet.next()) {
                     return resultSet.getString(1);
                 }
@@ -33,10 +35,10 @@ public class DatabaseHelper {
     public static String getVerificationCode() {
         String requestCode = "SELECT code FROM auth_codes WHERE user_id = ? ORDER BY created DESC LIMIT 1;";
         try (
-                PreparedStatement prepareStmt = getConnection().prepareStatement(requestCode)
+                var prepareStmt = getConnection().prepareStatement(requestCode)
         ) {
             prepareStmt.setString(1, getUserId());
-            try (ResultSet resultSet = prepareStmt.executeQuery()) {
+            try (var resultSet = prepareStmt.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getString(1);
                 }
